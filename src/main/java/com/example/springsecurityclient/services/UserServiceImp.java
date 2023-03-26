@@ -23,9 +23,9 @@ public class UserServiceImp implements UserService {
     @Override
     public User registerUser(UserModel userModel) {
         User user = new User();
-        user.setFirstName(user.getFirstName());
-        user.setLastName(user.getLastName());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setFirstName(userModel.getFirstName());
+        user.setLastName(userModel.getLastName());
+        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
         user.setRole("User");
         return userRepository.save(user);
     }
