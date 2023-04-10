@@ -51,8 +51,6 @@ public class RegistrationController {
         UserData userData = verificationToken.getUserData();
         resendVerificationTokenMail(userData, applicationUrl(httpServletRequest), verificationToken);
         return "Verification link sent";
-
-
     }
 
     @PostMapping("/resetPassword")
@@ -64,14 +62,6 @@ public class RegistrationController {
             userService.createPasswordResetTokenForUser(userData, token);
             url = passwordResetTokenMailer(userData,applicationUrl(httpServletRequest), token);
         }
-        return url;
-    }
-
-    private String passwordResetTokenMailer(UserData userData, String applicationUrl, String token) {
-        // Send mail to user
-        String url = applicationUrl + "/savePassword?token=" + token;
-        // send verification to email
-        LOGGER.info("Click the link to reset your password: {}", url);
         return url;
     }
 
@@ -91,6 +81,26 @@ public class RegistrationController {
             return "Invalid token";
         }
     }
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestBody PasswordModel passwordModel){
+        UserData userData = userService.findUserByEmail(passwordModel.getEmail());
+        if(!userService.checkIfValidOldPassword(userData, passwordModel.getOldPassword())){
+            return "Old password is Invalid";
+        }
+        // Save new password
+        userService.changePassword(userData, passwordModel.getNewPassword());
+        return "Password changed successfully";
+    }
+
+    private String passwordResetTokenMailer(UserData userData, String applicationUrl, String token) {
+        // Send mail to user
+        String url = applicationUrl + "/savePassword?token=" + token;
+        // send verification to email
+        LOGGER.info("Click the link to reset your password: {}", url);
+        return url;
+    }
+
 
     private void resendVerificationTokenMail(UserData userData, String applicationUrl, VerificationToken verificationToken) {
         // Send mail to user
