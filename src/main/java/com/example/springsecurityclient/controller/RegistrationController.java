@@ -1,15 +1,16 @@
 package com.example.springsecurityclient.controller;
 
-import com.example.springsecurityclient.entity.User;
+import com.example.springsecurityclient.entity.UserData;
+import com.example.springsecurityclient.entity.VerificationToken;
 import com.example.springsecurityclient.event.RegistrationCompleteEvent;
 import com.example.springsecurityclient.model.UserModel;
 import com.example.springsecurityclient.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegistrationController {
@@ -19,12 +20,42 @@ public class RegistrationController {
     @Autowired
     private UserService userService;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(RegistrationController.class);
+
     @PostMapping("/register")
     public String registerUser(@RequestBody UserModel userModel, final HttpServletRequest httpServletRequest){
-
-        User user = userService.registerUser(userModel);
-        applicationEventPublisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(httpServletRequest)));
+        LOGGER.info("Inside registerDepartment Controller");
+        UserData userData = userService.registerUser(userModel);
+        applicationEventPublisher.publishEvent(new RegistrationCompleteEvent(userData,applicationUrl(httpServletRequest)));
         return "Success";
+    }
+
+
+    @GetMapping("/verifyToken")
+    public String verificationToken(@RequestParam("token") String token){
+        String result = userService.validateVerificationToken(token);
+
+        if(result.equalsIgnoreCase("valid")){
+            return  "User verified successfully";
+        }
+        return "Bad user";
+    }
+
+    @GetMapping("/resendVerificationToken")
+    public String resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest httpServletRequest){
+        VerificationToken verificationToken = userService.generateNewVerificationToken(oldToken);
+        UserData userData = verificationToken.getUserData();
+        resendVerificationTokenMail(userData, applicationUrl(httpServletRequest), verificationToken);
+        return "Verification link sent";
+
+
+    }
+
+    private void resendVerificationTokenMail(UserData userData, String applicationUrl, VerificationToken verificationToken) {
+        // Send mail to user
+        String url = applicationUrl + "/verifyRegistration?token=" + verificationToken;
+        // send verification to email
+        log.info("Click the link to verify your account: {}", url);
     }
 
     private String applicationUrl(HttpServletRequest httpServletRequest ){

@@ -1,7 +1,7 @@
 package com.example.springsecurityclient.repository;
 
-import com.example.springsecurityclient.entity.User;
+import com.example.springsecurityclient.entity.UserData;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserData, Long> {
 }

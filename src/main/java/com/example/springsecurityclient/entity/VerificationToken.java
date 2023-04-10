@@ -25,10 +25,10 @@ public class VerificationToken {
             name="user_id",
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_USER_VERIFY_TOKEN"))
-    private User user;
+    private UserData userData;
 
-    public VerificationToken(User user, String token){
-        this.user = user;
+    public VerificationToken(UserData userData, String token){
+        this.userData = userData;
         this.token = token;
         this.expirationTime = calculatedExpirationTime(EXPIRATION_TIME);
     }

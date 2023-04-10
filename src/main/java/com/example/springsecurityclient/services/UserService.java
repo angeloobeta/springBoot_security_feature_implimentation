@@ -1,11 +1,15 @@
 package com.example.springsecurityclient.services;
 
-import com.example.springsecurityclient.entity.User;
+import com.example.springsecurityclient.entity.UserData;
+import com.example.springsecurityclient.entity.VerificationToken;
 import com.example.springsecurityclient.model.UserModel;
-import org.springframework.stereotype.Service;
 
 public interface UserService {
-    User registerUser(UserModel userModel);
+    UserData registerUser(UserModel userModel);
 
-    void saveVerificationToken(String token, User user);
+    void saveVerificationToken(String token, UserData userData);
+
+    String validateVerificationToken(String token);
+
+    VerificationToken generateNewVerificationToken(String oldToken);
 }

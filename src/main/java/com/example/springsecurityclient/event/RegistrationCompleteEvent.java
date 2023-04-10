@@ -1,21 +1,20 @@
 package com.example.springsecurityclient.event;
 
+import com.example.springsecurityclient.entity.UserData;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
-import com.example.springsecurityclient.entity.User;
-import java.time.Clock;
 
 @Getter
 @Setter
 public class RegistrationCompleteEvent extends ApplicationEvent {
 
-    private User user;
+    private UserData userData;
     private String applicationUrl;
-    public RegistrationCompleteEvent(User user, String applicationUrl) {
-        super(user);
+    public RegistrationCompleteEvent(UserData userData, String applicationUrl) {
+        super(userData);
         this.applicationUrl = applicationUrl;
-        this.user = user;
+        this.userData = userData;
     }
 
 }
